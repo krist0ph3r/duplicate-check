@@ -1,6 +1,8 @@
 import os
 import hashlib
+import sys
 from typing import List, Tuple
+
 
 def calculate_md5(file_path: str, block_size: int = 65536) -> str:
     """
@@ -37,7 +39,7 @@ def get_file_info(directory: str = '.') -> List[Tuple[str, int, str]]:
                     
                     # Calculate MD5 sum
                     md5_sum = calculate_md5(file_path)
-                    
+                    sys.stderr.write(file_path + "\n")
                     file_info_list.append((file_path, size, md5_sum))
             except Exception as e:
                 # Add a record for files that couldn't be processed
@@ -53,26 +55,9 @@ def display_file_info(info_list: List[Tuple[str, int, str]]):
         print("No files found or directory is empty.")
         return
 
-    # Define column headers
-    header = ["MD5 Checksum", "Size (Bytes)", "File Path"]
-    
-    # Determine maximum width for each column for clean alignment
-    max_md5 = max(len(info[2]) for info in info_list)
-    max_size = max(len(str(info[1])) for info in info_list)
-    max_path = max(len(info[0]) for info in info_list)
-    
-    # Ensure headers fit
-    max_md5 = max(max_md5, len(header[0]))
-    max_size = max(max_size, len(header[1]))
-    max_path = max(max_path, len(header[2]))
-
-    # Print Header
-    print(f"\n{header[0]:<{max_md5}} | {header[1]:<{max_size}} | {header[2]:<{max_path}}")
-    print("-" * (max_md5 + max_size + max_path + 6))
-
     # Print Data Rows
     for path, size, md5 in info_list:
-        print(f"{md5:<{max_md5}} | {size:<{max_size}} | {path:<{max_path}}")
+        print(f"{md5}|{size}|{path}")
 
 if __name__ == "__main__":
     # The script will start scanning from the current directory ('.')
@@ -80,7 +65,7 @@ if __name__ == "__main__":
     # START_DIR = '/path/to/scan'
     START_DIR = '.'
     
-    print(f"Scanning directory: **{os.path.abspath(START_DIR)}**\n")
+    sys.stderr.write(f"Scanning directory: **{os.path.abspath(START_DIR)}**\n")
     
     file_data = get_file_info(START_DIR)
     display_file_info(file_data)
